@@ -1,0 +1,126 @@
+from collections import OrderedDict
+from selenium.webdriver.support.ui import Select
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import re
+import openpyxl
+from openpyxl import workbook
+import getpass
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.common.exceptions import TimeoutException
+import time
+from datetime import date, datetime, timedelta
+from selenium.webdriver.chrome.service import Service
+import traceback
+import datetime
+import os
+
+username = getpass.getuser()
+d = date.today()
+d1 = d-timedelta(days=0)
+date1 = d1.strftime("%d-%m-%Y")
+time.sleep(5)
+today = datetime.datetime.today()
+username = getpass.getuser()
+
+def getRowCount(file, sheetName):
+    workbook = openpyxl.load_workbook(file)
+    sheet = workbook.get_sheet_by_name(sheetName)
+    return(sheet.max_row)
+
+
+def getColumnCount(file, sheetName):
+    workbook = openpyxl.load_workbook(file)
+    sheet = workbook.get_sheet_by_name(sheetName)
+    return(sheet.max_column)
+
+
+def readData(file, sheetName, rownum, columnno):
+    workbook = openpyxl.load_workbook(file)
+    sheet = workbook.get_sheet_by_name(sheetName)
+    return sheet.cell(row=rownum, column=columnno).value
+
+
+def writeData(file, sheetName, rownum, columnno, data):
+    workbook = openpyxl.load_workbook(file)
+    sheet = workbook.get_sheet_by_name(sheetName)
+    sheet.cell(row=rownum, column=columnno).value = data
+    workbook.save(file)
+
+def scroll_to_bottom():
+    last_height = driver.execute_script("return document.body.scrollHeight")
+    while True:
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        try:
+            WebDriverWait(driver, 10).until(
+                lambda driver: driver.execute_script("return document.body.scrollHeight") > last_height
+            )
+            last_height = driver.execute_script("return document.body.scrollHeight")
+        except TimeoutException:
+            # Break the loop if there is no more new content loaded
+            break
+
+service = Service()
+options = webdriver.ChromeOptions()
+driver = webdriver.Chrome(service=service, options=options)
+# driver = webdriver.Chrome(r"D:\\Westiminster\\Final project\\FB_SCAM\\chromedriver.exe")
+driver.get('https://www.facebook.com/marketplace/london/search/?query=london%20rental%20property')
+path = "D:\\Westiminster\\Final project\\FB_SCAM\\Data.xlsx"
+rows = getRowCount(path, 'Sheet1')
+time.sleep(30)
+
+# Define the list of classes for <img> and <span> elements
+img_classes_to_match = "xt7dq6l xl1xv1r x6ikm8r x10wlt62 xh8yej3"
+span_classes_to_match = "x193iq5w xeuugli x13faqbe x1vvkbs x1xmvt09 x1lliihq x1s928wv xhkezso x1gmr53x x1cpjm7i x1fgarty x1943h6x xudqn12 x676frb x1lkfr7t x1lbecb7 x1s688f xzsf02u"
+
+# Function to scroll down the page to load more content
+def scroll_to_bottom():
+    last_height = driver.execute_script("return document.body.scrollHeight")
+    while True:
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        try:
+            WebDriverWait(driver, 10).until(
+                lambda driver: driver.execute_script("return document.body.scrollHeight") > last_height
+            )
+            last_height = driver.execute_script("return document.body.scrollHeight")
+        except TimeoutException:
+            # Break the loop if there is no more new content loaded
+            break
+
+# Scroll down the page to load more content
+scroll_to_bottom()
+
+# Find all <img> elements with the specified class
+img_elements = driver.find_elements(By.XPATH, f'//img[contains(@class, "{img_classes_to_match}")]')
+
+# Find the <span> element with the specified class
+span_element = driver.find_element(By.XPATH, f'//span[contains(@class, "{span_classes_to_match}")]')
+span_text_content = span_element.text
+
+# Lists to store the extracted values
+alt_texts = []
+src_urls = []
+text_contents = []
+
+# Loop through each element and extract the 'alt' and 'src' attributes
+for img_element in img_elements:
+    alt_text = img_element.get_attribute('alt')
+    src_url = img_element.get_attribute('src')
+    
+    # Store the extracted values in lists
+    alt_texts.append(alt_text)
+    src_urls.append(src_url)
+    text_contents.append(span_text_content)
+
+# Print the extracted values
+for i in range(len(alt_texts)):
+    print("Text Content:", text_contents[i])
+    print("Alt Text:", alt_texts[i])
+    print("Image URL:", src_urls[i])
+
+# Print the extracted values
